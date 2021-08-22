@@ -162,7 +162,7 @@ contract ERC721 is Pausable, ERC165 {
         // TODO return the token balance of given address
         // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
         require(owner != address(0), "ERC721: balance query for the zero address");
-        Counters.current(_ownedTokensCount[owner]);
+        return Counters.current(_ownedTokensCount[owner]);
     }
 
     function ownerOf(uint256 tokenId) public view returns (address) {
@@ -189,7 +189,7 @@ contract ERC721 is Pausable, ERC165 {
     }
 
     function getApproved(uint256 tokenId) public view returns (address) {
-        return  _tokenApprovals[tokenId];
+        return _tokenApprovals[tokenId];
     }
 
     /**
@@ -257,7 +257,7 @@ contract ERC721 is Pausable, ERC165 {
 
         // TODO revert if given tokenId already exists or given address is invalid
         require(to != address(0), "invalid address");
-        require(_tokenOwner[tokenId] != address(0), "tokenId already exists");
+        require(_tokenOwner[tokenId] == address(0), "tokenId already exists");
 
         // TODO mint tokenId to given address & increase token count of owner
         Counters.increment(_ownedTokensCount[to]);
@@ -270,27 +270,22 @@ contract ERC721 is Pausable, ERC165 {
     // @dev Internal function to transfer ownership of a given token ID to another address.
     // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
     function _transferFrom(address from, address to, uint256 tokenId) internal {
+      require(from == ownerOf(tokenId), "from address must be the owner");
 
-        // TODO: require from address is the owner of the given token
-        require(from == ownerOf(tokenId), "from address must be the owner");
+      // TODO: require token is being transfered to valid address
+      require(to != address(0), "invalid address");
 
-        // TODO: require token is being transfered to valid address
-        require(to != address(0), "invalid address");
+      // TODO: clear approval
+      _tokenApprovals[tokenId] = address(0);
+      emit Approval(ownerOf(tokenId), address(0), tokenId);
 
-        // TODO: clear approval
-        _tokenApprovals[tokenId] = address(0);
-        emit Approval(ownerOf(tokenId), address(0), tokenId);
-        // if (_isApprovedOrOwner(msg.sender, tokenId)) {
+      // TODO: update token counts & transfer ownership of the token ID 
+      Counters.decrement(_ownedTokensCount[from]);
+      Counters.increment(_ownedTokensCount[to]);
+      _tokenOwner[tokenId] = to;
 
-          // TODO: update token counts & transfer ownership of the token ID 
-          Counters.decrement(_ownedTokensCount[from]);
-          Counters.increment(_ownedTokensCount[to]);
-          _tokenOwner[tokenId] = to;
-          
-
-          // TODO: emit correct event
-          emit Transfer(from, to, tokenId);
-        // }
+      // TODO: emit correct event
+      emit Transfer(from, to, tokenId);
     }
 
     /**
@@ -511,7 +506,6 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
      *     bytes4(keccak256('tokenURI(uint256)'))
      */
 
-
     constructor (string memory name, string memory symbol, string memory baseTokenURI) public {
         // TODO: set instance var values
         _name = name;
@@ -558,18 +552,16 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //      -takes in a 'to' address, tokenId, and tokenURI as parameters
 //      -returns a true boolean upon completion of the function
 //      -calls the superclass mint and setTokenURI functions
-contract CustomERC721Token is ERC721Metadata {
+contract ERC721MintableComplete is ERC721Metadata {
   string private constant baseTokenURI = "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/";
 
-  constructor(string memory name, string memory symbol) public {
-    ERC721Metadata(name, symbol, baseTokenURI);
+  constructor(string memory name, string memory symbol) ERC721Metadata(name, symbol, baseTokenURI) public {
+
   }
 
-  function mint(address to, uint256 tokenId, string memory tokenURI) public onlyOwner() returns (bool){
+  function mint(address to, uint256 tokenId) public onlyOwner() returns (bool){
     super._mint(to, tokenId);
     setTokenURI(tokenId);
     return true;
   }
 }
-
-
