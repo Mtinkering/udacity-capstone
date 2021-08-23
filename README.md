@@ -4,7 +4,11 @@
 The capstone will build upon the knowledge you have gained in the course in order to build a decentralized housing product. 
 
 # How to use
-To run this project, create .secret.json at the root, which contains mnemonic and infurakey. File content is passed with the project submission.
+To run this project, create .secret.json at the root, which contains mnemonic and infurakey.
+  "infuraKey": "###",
+  "mnemonic": "###"
+}
+
 
 # Test
 ```truffle develop test```
