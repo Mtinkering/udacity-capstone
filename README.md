@@ -5,9 +5,15 @@ The capstone will build upon the knowledge you have gained in the course in orde
 
 # How to use
 To run this project, create .secret.json at the root, which contains mnemonic and infurakey.
+
+```
+{
   "infuraKey": "###",
   "mnemonic": "###"
 }
+```
+
+For this project, mnemonic is passed along in the submission for verification purpose
 
 
 # Test
