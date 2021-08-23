@@ -4,3 +4,5 @@ eth-contracts/build
 zokrates/.DS_Store
 zokrates/code/.DS_Store
 .secret.json
+mint.js
+proofs
