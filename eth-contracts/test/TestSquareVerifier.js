@@ -6,7 +6,7 @@ const Proof = require("./proof.json");
 // - use the contents from proof.json generated from zokrates steps
 
 // Test verification with incorrect proof
-contract("Verifier", async (accounts) => {
+contract("Verifier", () => {
   describe("match specs", function () {
     beforeEach(async function () {
       this.contract = await SquareVerifier.new();
